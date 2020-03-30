@@ -57,7 +57,7 @@ public class RCTQRCodeLocalImage extends ReactContextBaseJavaModule {
 
         // down scale large images
         if (scanBitmap.getWidth() * scanBitmap.getHeight() > 1000000) {
-            options.inSampleSize = 1;
+            options.inSampleSize = 2;
             if (path.startsWith("http://") || path.startsWith("https://")) {
                 scanBitmap = BitmapFactory.decodeFile(path);
             } else {
