@@ -20,7 +20,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Hashtable;
 
-
 public class RCTQRCodeLocalImage extends ReactContextBaseJavaModule {
     public RCTQRCodeLocalImage(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -45,8 +44,9 @@ public class RCTQRCodeLocalImage extends ReactContextBaseJavaModule {
             sampleSize = 1;
         options.inSampleSize = sampleSize;
         Bitmap scanBitmap = null;
-        if (path.startsWith("http://")||path.startsWith("https://")) {
-            scanBitmap = this.getbitmap(path);
+
+        if (path.startsWith("http://") || path.startsWith("https://")) {
+            scanBitmap = BitmapFactory.decodeFile(path);
         } else {
             scanBitmap = BitmapFactory.decodeFile(path, options);
         }
@@ -54,7 +54,22 @@ public class RCTQRCodeLocalImage extends ReactContextBaseJavaModule {
             callback.invoke("cannot load image");
             return;
         }
-        int[] intArray = new int[scanBitmap.getWidth()*scanBitmap.getHeight()];
+
+        // down scale large images
+        if (scanBitmap.getWidth() * scanBitmap.getHeight() > 1000000) {
+            options.inSampleSize = 1;
+            if (path.startsWith("http://") || path.startsWith("https://")) {
+                scanBitmap = BitmapFactory.decodeFile(path);
+            } else {
+                scanBitmap = BitmapFactory.decodeFile(path, options);
+            }
+            if (scanBitmap == null) {
+                callback.invoke("cannot load image");
+                return;
+            }
+        }
+
+        int[] intArray = new int[scanBitmap.getWidth() * scanBitmap.getHeight()];
         scanBitmap.getPixels(intArray, 0, scanBitmap.getWidth(), 0, 0, scanBitmap.getWidth(), scanBitmap.getHeight());
 
         RGBLuminanceSource source = new RGBLuminanceSource(scanBitmap.getWidth(), scanBitmap.getHeight(), intArray);
@@ -69,6 +84,9 @@ public class RCTQRCodeLocalImage extends ReactContextBaseJavaModule {
             }
 
         } catch (Exception e) {
+            if (e.getMessage().contains("NotFoundException")) {
+                callback.invoke("decode error, mb image too large.");
+            }
             callback.invoke("decode error");
         }
     }
