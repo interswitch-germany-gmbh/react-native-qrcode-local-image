@@ -84,10 +84,11 @@ public class RCTQRCodeLocalImage extends ReactContextBaseJavaModule {
             }
 
         } catch (Exception e) {
-            if (e.getMessage().contains("NotFoundException")) {
-                callback.invoke("decode error, mb image too large.");
+            if (e.toString() != null && e.toString().indexOf("NotFoundException") >= 0) {
+                callback.invoke("decode error, may be image too large.");
+            } else {
+                callback.invoke("decode error");
             }
-            callback.invoke("decode error");
         }
     }
 

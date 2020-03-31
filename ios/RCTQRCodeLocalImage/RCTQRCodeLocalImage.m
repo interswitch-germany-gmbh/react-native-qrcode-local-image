@@ -24,7 +24,7 @@ RCT_EXPORT_METHOD(decode:(NSString *)path callback:(RCTResponseSenderBlock)callb
     }
     if (nil==srcImage){
         NSLog(@"PROBLEM! IMAGE NOT LOADED\n");
-        callback(@[RCTMakeError(@"IMAGE NOT LOADED!", nil, nil)]);
+        callback(@[@"IMAGE NOT LOADED!", [NSNull null]]);
         return;
     }
     NSLog(@"OK - IMAGE LOADED\n");
@@ -34,7 +34,7 @@ RCT_EXPORT_METHOD(decode:(NSString *)path callback:(RCTResponseSenderBlock)callb
     NSArray *features = [detector featuresInImage:image];
     if (0==features.count) {
         NSLog(@"PROBLEM! Feature size is zero!\n");
-        callback(@[RCTMakeError(@"Feature size is zero!", nil, nil)]);
+        callback(@[@"Feature size is zero!", [NSNull null]]);
         return;
     }
     
@@ -46,7 +46,7 @@ RCT_EXPORT_METHOD(decode:(NSString *)path callback:(RCTResponseSenderBlock)callb
     if (result) {
         callback(@[[NSNull null], result]);
     } else {
-        callback(@[RCTMakeError(@"QR Parse failed!", nil, nil)]);
+        callback(@[@"QR Parse failed!", [NSNull null]]);
         return;
     }
 }
